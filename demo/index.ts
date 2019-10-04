@@ -1,20 +1,24 @@
 import { Generators, Website } from '../src';
 
+const blog = new Generators.Articles({
+  prefix: '/blog',
+  limit: 100,
+});
+
 const website = new Website({
   homepage: new Generators.Homepage({
-    listAllLinks: true,
+    listing: true,
   }),
-  sitemaps: {
-    'sitemap.xml': new Generators.Sitemap(),
-  },
-  childs: {
-    '/blog': new Generators.Articles({
-      limit: 100,
-    }),
+  childs: [
+    blog,
     // '/products': new Generators.Products(),
     // '/errors': new Generators.HttpErrors(),
     // '/protected': new Auth.Basic(),
-  },
+  ],
+  sitemaps: [
+    new Generators.Sitemap('sitemap.xml', []),
+    new Generators.Sitemap('blog.xml', [blog]),
+  ],
   logger: console,
 });
 

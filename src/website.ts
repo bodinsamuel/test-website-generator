@@ -3,12 +3,13 @@ import json from 'koa-json';
 import Router from 'koa-router';
 
 import { Server } from 'net';
+import { GeneratorInterface } from './generators/generator';
 
-interface Config {
+export interface Config {
   homepage: any;
-  childs: any;
-  sitemaps: any;
-  logger: any;
+  childs: GeneratorInterface[];
+  sitemaps?: GeneratorInterface[];
+  logger?: any;
 }
 
 export class Website {
@@ -19,28 +20,45 @@ export class Website {
   private server?: Server;
 
   constructor(config: Config) {
-    this.config = config;
+    this.config = { logger: console, sitemaps: [], ...config };
     this.app = new Koa();
   }
 
   async registers(): Promise<Router> {
     const config = this.config;
     const mainRouter = new Router();
+
     await Promise.all(
-      Object.keys(config.childs).map(async path => {
-        const child = config.childs[path];
+      config.childs.map(async child => {
+        child.config = config;
         const router = await child.register(new Router());
-        mainRouter.use(path, router.routes());
+        mainRouter.use(router.routes());
       })
     );
-    mainRouter.get('/prout', () => {
-      console.log('yoo');
-    });
+
+    if (config.sitemaps) {
+      await Promise.all(
+        config.sitemaps.map(async sitemap => {
+          sitemap.config = config;
+          const router = await sitemap.register(new Router());
+          mainRouter.use(router.routes());
+        })
+      );
+    }
+
+    if (config.homepage) {
+      config.homepage.config = config;
+      const router = await config.homepage.register(new Router());
+      mainRouter.use(router.routes());
+    }
+
     return mainRouter;
   }
 
   async start(): Promise<void> {
     this.app.use(json());
+
+    // Logger
     this.app.use((ctx, next) => {
       console.log('Serving', ctx.path);
       next();
@@ -48,7 +66,6 @@ export class Website {
 
     const router = await this.registers();
     this.app.use(router.routes()).use(router.allowedMethods());
-    console.log(router.stack);
 
     this.server = this.app.listen(3000);
   }
