@@ -1,0 +1,32 @@
+{
+  "name": "test-website-generator",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "repository": "https://github.com/bodinsamuel/test-website-generator.git",
+  "author": "Samuel Bodin <samuel.bodin@algolia.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "tsc-watch -p tsconfig.json --onSuccess \"node dist/index.js\"",
+    "lint": "eslint --ext=ts,js src",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/koa": "2.0.50",
+    "@types/koa-bodyparser": "4.3.0",
+    "@types/koa-json": "2.0.18",
+    "@types/koa-router": "7.0.42",
+    "tsc-watch": "4.0.0",
+    "typescript": "3.6.3"
+  },
+  "dependencies": {
+    "koa": "2.8.2",
+    "koa-bodyparser": "4.2.1",
+    "koa-json": "2.0.2",
+    "koa-router": "7.4.0"
+  },
+  "engines": {
+    "node": "12.7.0",
+    "yarn": "^1.19.0"
+  }
+}
