@@ -11,11 +11,9 @@ const website = new Website({
   }),
   childs: [
     blog,
-    // '/products': new Generators.Products(),
     new Generators.HttpStatus({
       prefix: '/http',
     }),
-    // '/protected': new Auth.Basic(),
   ],
   sitemaps: [
     new Generators.Sitemap('sitemap.xml', []),

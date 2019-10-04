@@ -128,7 +128,7 @@ export class HttpStatus implements GeneratorInterface {
         return;
       }
 
-      const path = `/${this.prefix}/${code}`;
+      const path = `${this.prefix}/${code}`;
       this.paths.add(path);
 
       router.get(`/${code}`, (ctx: Context) => {
@@ -143,7 +143,6 @@ export class HttpStatus implements GeneratorInterface {
       });
     }
 
-    console.log(router);
     return router;
   }
 
@@ -158,7 +157,22 @@ export class HttpStatus implements GeneratorInterface {
 
   generateResponse(ctx: Context, code: Codes) {
     ctx.status = code;
-    ctx.body = CODE_MESSAGES[code];
+
+    if (code !== Codes.NO_CONTENT && code !== Codes.NOT_MODIFIED) {
+      ctx.body = CODE_MESSAGES[code];
+    }
+
+    if (code === Codes.MOVED_PERMANENTLY) {
+      ctx.set('Location', '/');
+    } else if (code === Codes.MOVED_TEMPORARILY) {
+      ctx.set('Location', '/');
+    } else if (code === Codes.SEE_OTHER) {
+      ctx.set('Location', '/');
+    } else if (code === Codes.TEMPORARY_REDIRECT) {
+      ctx.set('Location', '/');
+    } else if (code === Codes.PERMANENT_REDIRECT) {
+      ctx.set('Location', '/');
+    }
   }
 
   generatePage() {
