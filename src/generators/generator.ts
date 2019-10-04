@@ -2,6 +2,7 @@ import Router = require('koa-router');
 import { Context } from 'koa';
 
 import { Config } from '../website';
+import { HTMLTemplateFunction } from 'utils/html_template';
 
 export abstract class GeneratorInterface {
   public abstract paths: Set<string> = new Set();
@@ -9,6 +10,8 @@ export abstract class GeneratorInterface {
   public abstract prefix: string;
 
   public abstract config?: Config;
+
+  public abstract template?: HTMLTemplateFunction;
 
   abstract register(router: Router): Promise<Router> | Router;
 

@@ -14,9 +14,9 @@ export class Homepage implements GeneratorInterface {
 
   public config?: Config;
 
-  private listing: boolean;
+  public template: HTMLTemplateFunction;
 
-  private template: HTMLTemplateFunction;
+  private listing: boolean;
 
   constructor({ listing }: Partial<Args>, template?: HTMLTemplateFunction) {
     this.listing = listing || true;

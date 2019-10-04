@@ -16,11 +16,11 @@ export class Articles implements GeneratorInterface {
 
   public prefix: string;
 
+  public template: HTMLTemplateFunction;
+
   private listing: Args['listing'];
 
   private slug: Args['slug'];
-
-  private template: HTMLTemplateFunction;
 
   private limit: Args['limit'];
 

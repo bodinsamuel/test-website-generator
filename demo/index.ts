@@ -12,7 +12,9 @@ const website = new Website({
   childs: [
     blog,
     // '/products': new Generators.Products(),
-    // '/errors': new Generators.HttpErrors(),
+    new Generators.HttpStatus({
+      prefix: '/http',
+    }),
     // '/protected': new Auth.Basic(),
   ],
   sitemaps: [
