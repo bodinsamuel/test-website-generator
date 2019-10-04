@@ -1,11 +1,5 @@
-import Koa from 'koa';
-import json from 'koa-json';
+import Auth from './auth';
+import Generators from './generators';
+import { Website } from './website';
 
-async function bootstrap(): Promise<void> {
-  const app = new Koa();
-
-  app.use(json());
-
-  app.listen(3000);
-}
-bootstrap();
+export { Auth, Generators, Website };
