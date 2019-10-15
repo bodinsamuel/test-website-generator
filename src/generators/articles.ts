@@ -1,8 +1,8 @@
 import { Context } from 'koa';
 import Router = require('koa-router');
 
-import { HTMLTemplateFunction, DEFAULT_TEMPLATE } from '../utils/html_template';
 import { GeneratorInterface } from './generator';
+import { HTML, Args as HTMLArgs } from './content/html';
 
 export interface Args {
   prefix: string;
@@ -11,12 +11,10 @@ export interface Args {
   limit: number;
 }
 
-export class Articles implements GeneratorInterface {
+export class Articles extends HTML implements GeneratorInterface {
   public paths: Set<string> = new Set();
 
   public prefix: string;
-
-  public template: HTMLTemplateFunction;
 
   private listing: Args['listing'];
 
@@ -26,13 +24,14 @@ export class Articles implements GeneratorInterface {
 
   constructor(
     { prefix, listing, slug, limit }: Partial<Args>,
-    template?: HTMLTemplateFunction
+    html?: HTMLArgs
   ) {
+    super(html || {});
+
     this.prefix = prefix || '';
     this.listing = listing || true;
     this.slug = slug || ((slug, id) => `${slug}-${id}.html`);
     this.limit = limit || 100;
-    this.template = template || DEFAULT_TEMPLATE;
   }
 
   register(router: Router) {
@@ -44,6 +43,9 @@ export class Articles implements GeneratorInterface {
     for (let index = 0; index < this.limit; index++) {
       this.paths.add(`${this.prefix}/${this.slug('a', index)}`);
     }
+
+    this.generateAssets();
+    this.registerAssets(router);
 
     if (this.listing) {
       router.get(`/`, ctx => {
@@ -70,10 +72,15 @@ export class Articles implements GeneratorInterface {
       body: `<ul>${Array.from(this.paths)
         .map(path => `<li><a href="${path}">${path}</a></li>`)
         .join('')}</ul>`,
+      meta: this.assets.map(asset => asset.meta).join(''),
     });
   }
 
   generatePage(ctx: Context) {
-    return this.template({ title: ctx.path, body: ctx.path });
+    return this.template({
+      title: ctx.path,
+      body: ctx.path,
+      meta: this.assets.map(asset => asset.meta).join(''),
+    });
   }
 }

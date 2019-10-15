@@ -1,9 +1,14 @@
 export type HTMLTemplateFunction = (args: {
   title: string;
   body: string;
+  meta?: string;
 }) => string;
 
-export const DEFAULT_TEMPLATE: HTMLTemplateFunction = ({ title, body }) => {
+export const DEFAULT_TEMPLATE: HTMLTemplateFunction = ({
+  title,
+  body,
+  meta,
+}) => {
   return `
 <!DOCTYPE html>
 <html>
@@ -12,6 +17,7 @@ export const DEFAULT_TEMPLATE: HTMLTemplateFunction = ({ title, body }) => {
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
   <title>${title}</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
+  ${meta || ''}
 </head>
 <body>
   ${body}

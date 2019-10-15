@@ -1,35 +1,39 @@
 import Router = require('koa-router');
 
 import { GeneratorInterface } from './generator';
-import { HTMLTemplateFunction, DEFAULT_TEMPLATE } from '../utils/html_template';
 import { Config } from 'website';
+import { HTML, Args as HTMLArgs } from './content/html';
 
 interface Args {
   listing: boolean;
 }
-export class Homepage implements GeneratorInterface {
+export class Homepage extends HTML implements GeneratorInterface {
   public paths: Set<string> = new Set();
 
   public prefix: string = '';
 
   public config?: Config;
 
-  public template: HTMLTemplateFunction;
-
   private listing: boolean;
 
-  constructor({ listing }: Partial<Args>, template?: HTMLTemplateFunction) {
+  constructor({ listing }: Partial<Args>, html?: HTMLArgs) {
+    super(html || {});
+
     this.listing = listing || true;
-    this.template = template || DEFAULT_TEMPLATE;
   }
 
   register(router: Router) {
     if (this.listing) {
       this.paths.add('/');
 
+      this.generateAssets();
+      this.registerAssets(router);
+
+      const page = this.generatePage();
+
       router.get(`/`, ctx => {
         ctx.status = 200;
-        ctx.body = this.generatePage();
+        ctx.body = page;
       });
     }
 
@@ -37,11 +41,7 @@ export class Homepage implements GeneratorInterface {
   }
 
   generatePage() {
-    const childs = this.config!.childs.map(
-      child => `<li><a href="${child.prefix}">${child.prefix}</a></li>`
-    ).join('');
-
-    const sitemaps = this.config!.sitemaps!.map(
+    const childs = this.config!.paths.map(
       child => `<li><a href="${child.prefix}">${child.prefix}</a></li>`
     ).join('');
 
@@ -51,10 +51,8 @@ export class Homepage implements GeneratorInterface {
       <ul>
         ${childs}
       </ul>
-      <ul>
-        ${sitemaps}
-      </ul>
       `,
+      meta: this.assets.map(asset => asset.meta).join(''),
     });
   }
 }

@@ -1,8 +1,8 @@
+import { Context } from 'koa';
 import Router = require('koa-router');
 
-import { HTMLTemplateFunction, DEFAULT_TEMPLATE } from '../utils/html_template';
 import { GeneratorInterface } from './generator';
-import { Context } from 'koa';
+import { HTML, Args as HTMLArgs } from './content/html';
 
 export enum Codes {
   BAD_GATEWAY = 502,
@@ -70,24 +70,20 @@ export interface Args {
   };
 }
 
-export class HttpStatus implements GeneratorInterface {
+export class HttpStatus extends HTML implements GeneratorInterface {
   public paths: Set<string> = new Set();
 
   public prefix: string;
-
-  public template: HTMLTemplateFunction;
 
   private codes: { [key in Codes]: boolean };
 
   private listing: Args['listing'];
 
-  constructor(
-    { prefix, codes, listing }: Partial<Args>,
-    template?: HTMLTemplateFunction
-  ) {
+  constructor({ prefix, codes, listing }: Partial<Args>, html?: HTMLArgs) {
+    super(html || {});
+
     this.prefix = prefix || '';
     this.listing = listing || true;
-    this.template = template || DEFAULT_TEMPLATE;
 
     this.codes = {
       [Codes.BAD_GATEWAY]: true,

@@ -6,9 +6,8 @@ import { Server } from 'net';
 import { GeneratorInterface } from './generators/generator';
 
 export interface Config {
-  homepage: any;
-  childs: GeneratorInterface[];
-  sitemaps?: GeneratorInterface[];
+  paths: GeneratorInterface[];
+  homepage: GeneratorInterface;
   logger?: any;
 }
 
@@ -20,7 +19,7 @@ export class Website {
   private server?: Server;
 
   constructor(config: Config) {
-    this.config = { logger: console, sitemaps: [], ...config };
+    this.config = { logger: console, ...config };
     this.app = new Koa();
   }
 
@@ -29,22 +28,12 @@ export class Website {
     const mainRouter = new Router();
 
     await Promise.all(
-      config.childs.map(async child => {
-        child.config = config;
-        const router = await child.register(new Router());
+      config.paths.map(async path => {
+        path.config = config;
+        const router = await path.register(new Router());
         mainRouter.use(router.routes());
       })
     );
-
-    if (config.sitemaps) {
-      await Promise.all(
-        config.sitemaps.map(async sitemap => {
-          sitemap.config = config;
-          const router = await sitemap.register(new Router());
-          mainRouter.use(router.routes());
-        })
-      );
-    }
 
     if (config.homepage) {
       config.homepage.config = config;
