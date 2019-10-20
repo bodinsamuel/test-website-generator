@@ -12,7 +12,7 @@ export interface Args {
 }
 
 export class HTML {
-  protected assets: Asset[];
+  public assets: Asset[];
 
   public template: HTMLTemplateFunction;
 

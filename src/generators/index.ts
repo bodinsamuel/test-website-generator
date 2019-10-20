@@ -4,5 +4,6 @@ import { HttpStatus } from './httpstatus';
 import { Sitemap } from './sitemap';
 
 import Assets from './assets';
+import Content from './content';
 
-export default { Articles, Homepage, HttpStatus, Sitemap, Assets };
+export default { Articles, Homepage, HttpStatus, Sitemap, Assets, Content };

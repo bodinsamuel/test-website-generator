@@ -2,16 +2,21 @@ import { Context } from 'koa';
 import Router = require('koa-router');
 
 import { GeneratorInterface } from './generator';
-import { HTML, Args as HTMLArgs } from './content/html';
+import { HTML } from './content/html';
+import { Text } from './content/text';
+import { ARTICLE_BODY } from '../utils/article_body';
 
 export interface Args {
   prefix: string;
   listing: boolean;
   slug: (slug: string, id: number) => string;
   limit: number;
+  textGenerator: Text;
+  htmlBase: HTML;
+  bodyTemplate: (args: any) => string;
 }
 
-export class Articles extends HTML implements GeneratorInterface {
+export class Articles implements GeneratorInterface {
   public paths: Set<string> = new Set();
 
   public prefix: string;
@@ -22,30 +27,52 @@ export class Articles extends HTML implements GeneratorInterface {
 
   private limit: Args['limit'];
 
-  constructor(
-    { prefix, listing, slug, limit }: Partial<Args>,
-    html?: HTMLArgs
-  ) {
-    super(html || {});
+  private textGenerator: Args['textGenerator'];
+
+  private htmlBase: HTML;
+
+  private bodyTemplate: Args['bodyTemplate'];
+
+  constructor({
+    prefix,
+    listing,
+    slug,
+    limit,
+    textGenerator,
+    htmlBase,
+    bodyTemplate,
+  }: Partial<Args>) {
+    if (!textGenerator) {
+      throw new Error('Missing mandatory `textGenerator`');
+    }
+    if (!htmlBase) {
+      throw new Error('Missing mandatory `htmlBase`');
+    }
 
     this.prefix = prefix || '';
     this.listing = listing || true;
     this.slug = slug || ((slug, id) => `${slug}-${id}.html`);
     this.limit = limit || 100;
+    this.bodyTemplate = bodyTemplate || ARTICLE_BODY;
+    this.textGenerator = textGenerator;
+    this.htmlBase = htmlBase;
   }
 
   register(router: Router) {
     router.prefix(this.prefix);
 
     // @ts-ignore
-    const match = this.slug(':slug', ':id');
+    const match = this.slug(':slug', ':id(\\d+)');
 
     for (let index = 0; index < this.limit; index++) {
-      this.paths.add(`${this.prefix}/${this.slug('a', index)}`);
+      const slug = this.textGenerator.slugify(
+        this.textGenerator.getArticle(index).title
+      );
+      this.paths.add(`${this.prefix}/${this.slug(slug, index)}`);
     }
 
-    this.generateAssets();
-    this.registerAssets(router);
+    this.htmlBase.generateAssets();
+    this.htmlBase.registerAssets(router);
 
     if (this.listing) {
       router.get(`/`, ctx => {
@@ -67,20 +94,29 @@ export class Articles extends HTML implements GeneratorInterface {
   }
 
   generateListing() {
-    return this.template({
+    return this.htmlBase.template({
       title: 'Articles',
       body: `<ul>${Array.from(this.paths)
         .map(path => `<li><a href="${path}">${path}</a></li>`)
         .join('')}</ul>`,
-      meta: this.assets.map(asset => asset.meta).join(''),
+      meta: this.htmlBase.assets.map(asset => asset.meta).join(''),
     });
   }
 
   generatePage(ctx: Context) {
-    return this.template({
+    console.log('prout', ctx.params.id);
+    const article = this.textGenerator.getArticle(ctx.params.id);
+    return this.htmlBase.template({
       title: ctx.path,
-      body: ctx.path,
-      meta: this.assets.map(asset => asset.meta).join(''),
+      body: this.bodyTemplate({
+        title: article.title,
+        author: article.author,
+        text: article.text
+          .split('\n')
+          .map(t => `<p>${t}</p>`)
+          .join(''),
+      }),
+      meta: this.htmlBase.assets.map(asset => asset.meta).join(''),
     });
   }
 }

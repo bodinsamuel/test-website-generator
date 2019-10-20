@@ -1,4 +1,6 @@
 import { Generators, Website } from '../src';
+import algoliaDataset from '../src/datasets/algolia.blog.json';
+import { HTML } from '../src/generators/content/html';
 
 const assets = [
   new Generators.Assets.CSS({
@@ -9,15 +11,15 @@ const assets = [
   }),
 ];
 
-const blog = new Generators.Articles(
-  {
-    prefix: '/blog',
-    limit: 100,
-  },
-  {
-    assets,
-  }
-);
+const htmlBase = new HTML({ assets });
+const textGenerator = new Generators.Content.Text(algoliaDataset);
+
+const blog = new Generators.Articles({
+  prefix: '/blog',
+  limit: 100,
+  textGenerator,
+  htmlBase: htmlBase,
+});
 
 const homepage = new Generators.Homepage(
   {
