@@ -6,12 +6,11 @@ import { HTMLTemplateFunction } from 'utils/html_template';
 
 export abstract class GeneratorInterface {
   public abstract paths: Set<string> = new Set();
-
   public abstract prefix: string;
-
   public abstract config?: Config;
-
   public abstract template?: HTMLTemplateFunction;
+
+  abstract pattern(): string;
 
   abstract register(router: Router): Promise<Router> | Router;
 

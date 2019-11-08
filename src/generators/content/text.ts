@@ -8,6 +8,7 @@ export interface Dataset {
 
 export class Text {
   private dataset: Dataset[];
+
   constructor(dataset: Dataset[]) {
     this.dataset = dataset;
   }

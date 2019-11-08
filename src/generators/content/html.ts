@@ -13,7 +13,6 @@ export interface Args {
 
 export class HTML {
   public assets: Asset[];
-
   public template: HTMLTemplateFunction;
 
   constructor({ assets = [], template }: Args) {

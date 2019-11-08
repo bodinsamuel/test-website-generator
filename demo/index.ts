@@ -39,6 +39,23 @@ const website = new Website({
     }),
     new Generators.Sitemap('sitemap.xml', []),
     new Generators.Sitemap('blog.xml', [blog]),
+    new Generators.RobotsTxt({
+      block: '/prout',
+      allow: [blog],
+    }),
+    // new Path('/infinite-loop', [
+    //   new Page({
+    //     path: '/canonical-source.html'
+    //     meta: ['<link rel="canonical" href="canonical-target.html" />']
+    //   }),
+    //   new Page({
+    //     path: '/canonical-target.html'
+    //     meta: ['<link rel="canonical" href="canonical-target.html" />']
+    //   }),
+    // ]),
+    // new Static({
+    //   serve: __dirname
+    // }),
   ],
   logger: console,
 });

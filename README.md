@@ -32,3 +32,4 @@ cf `demo/`
   - Randomize
   - Common query params random
 - Robots.txt generator
+- Static resource serve

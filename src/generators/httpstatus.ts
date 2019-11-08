@@ -72,11 +72,9 @@ export interface Args {
 
 export class HttpStatus extends HTML implements GeneratorInterface {
   public paths: Set<string> = new Set();
-
   public prefix: string;
 
   private codes: { [key in Codes]: boolean };
-
   private listing: Args['listing'];
 
   constructor({ prefix, codes, listing }: Partial<Args>, html?: HTMLArgs) {
@@ -114,6 +112,10 @@ export class HttpStatus extends HTML implements GeneratorInterface {
       [Codes.UNAUTHORIZED]: true,
       ...codes,
     };
+  }
+
+  pattern() {
+    return `${this.prefix}/*`;
   }
 
   register(router: Router) {

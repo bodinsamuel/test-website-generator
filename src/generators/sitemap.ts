@@ -6,7 +6,6 @@ export interface Args {}
 
 export class Sitemap implements GeneratorInterface {
   public paths: Set<string> = new Set();
-
   public prefix: string = '';
 
   private generators: GeneratorInterface[];
@@ -14,6 +13,10 @@ export class Sitemap implements GeneratorInterface {
   constructor(prefix: string, generators: GeneratorInterface[]) {
     this.prefix = prefix;
     this.generators = generators;
+  }
+
+  pattern() {
+    return `/${this.prefix}`;
   }
 
   register(router: Router) {

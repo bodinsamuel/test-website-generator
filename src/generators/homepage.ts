@@ -9,9 +9,7 @@ interface Args {
 }
 export class Homepage extends HTML implements GeneratorInterface {
   public paths: Set<string> = new Set();
-
   public prefix: string = '';
-
   public config?: Config;
 
   private listing: boolean;
@@ -20,6 +18,10 @@ export class Homepage extends HTML implements GeneratorInterface {
     super(html || {});
 
     this.listing = listing || true;
+  }
+
+  pattern() {
+    return '/';
   }
 
   register(router: Router) {

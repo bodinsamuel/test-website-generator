@@ -18,19 +18,13 @@ export interface Args {
 
 export class Articles implements GeneratorInterface {
   public paths: Set<string> = new Set();
-
   public prefix: string;
 
   private listing: Args['listing'];
-
   private slug: Args['slug'];
-
   private limit: Args['limit'];
-
   private textGenerator: Args['textGenerator'];
-
   private htmlBase: HTML;
-
   private bodyTemplate: Args['bodyTemplate'];
 
   constructor({
@@ -56,6 +50,10 @@ export class Articles implements GeneratorInterface {
     this.bodyTemplate = bodyTemplate || ARTICLE_BODY;
     this.textGenerator = textGenerator;
     this.htmlBase = htmlBase;
+  }
+
+  pattern() {
+    return `${this.prefix}/*`;
   }
 
   register(router: Router) {

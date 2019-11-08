@@ -5,9 +5,9 @@ interface Args {
 }
 
 export class JS extends Asset {
-  private size: number;
-
   public readonly mime: string = 'application/javascript';
+
+  private size: number;
 
   constructor({ size }: Args) {
     super();
